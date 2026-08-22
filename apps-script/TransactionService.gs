@@ -10,11 +10,13 @@ const TransactionService = {
 
   get: function (id) {
     requirePermission("transactions:view");
-    const transaction = this.list({}).find(function (item) {
+    const list = this.list({});
+    const transaction = list.find(function (item) {
       return String(item.id) === String(id);
     });
     if (!transaction) {
-      throw appError("TRANSACTION_NOT_FOUND", "ไม่พบรายการที่ต้องการ");
+      const ids = list.map(function (item) { return item.id; }).join(", ");
+      throw appError("TRANSACTION_NOT_FOUND", "ไม่พบรายการที่ต้องการ: " + id + " (รายการที่มี: " + ids + ")");
     }
     return transaction;
   },
@@ -63,17 +65,17 @@ const TransactionService = {
 function normalizeTransaction(record) {
   return {
     id: String(record.id || ""),
-    date: String(record.date || ""),
+    date: formatDate(record.date),
     type: String(record.type || ""),
-    operationDate: String(record.operationDate || ""),
+    operationDate: formatDate(record.operationDate),
     description: String(record.description || ""),
     categoryId: String(record.categoryId || ""),
     amount: Number(record.amount || 0),
     paymentTypeId: String(record.paymentTypeId || ""),
     received: normalizeBoolean(record.received),
     note: String(record.note || ""),
-    createdAt: String(record.createdAt || ""),
-    updatedAt: String(record.updatedAt || ""),
+    createdAt: formatDateTime(record.createdAt),
+    updatedAt: formatDateTime(record.updatedAt),
     createdBy: String(record.createdBy || ""),
     updatedBy: String(record.updatedBy || ""),
   };

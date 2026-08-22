@@ -29,7 +29,6 @@ const SHEET_HEADERS = {
   settings: ["key", "value"],
 };
 
-const VALID_TRANSACTION_TYPES = ["income", "expense"];
 const VALID_USER_ROLES = ["admin", "user"];
 const DEFAULT_TIMEZONE = "Asia/Bangkok";
 

@@ -44,6 +44,7 @@ const SheetRepository = {
     if (rows.length > 0) {
       sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
     }
+    SpreadsheetApp.flush();
   },
 
   append: function (name, record) {
@@ -53,6 +54,7 @@ const SheetRepository = {
       return record[header] === undefined ? "" : record[header];
     });
     sheet.appendRow(row);
+    SpreadsheetApp.flush();
   },
 
   updateById: function (name, id, nextRecord) {

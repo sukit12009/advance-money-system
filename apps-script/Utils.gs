@@ -107,3 +107,17 @@ function keyById(items) {
     return acc;
   }, {});
 }
+
+function formatDate(value) {
+  if (value instanceof Date) {
+    return Utilities.formatDate(value, DEFAULT_TIMEZONE, "yyyy-MM-dd");
+  }
+  return String(value || "");
+}
+
+function formatDateTime(value) {
+  if (value instanceof Date) {
+    return Utilities.formatDate(value, DEFAULT_TIMEZONE, "yyyy-MM-dd'T'HH:mm:ssXXX");
+  }
+  return String(value || "");
+}

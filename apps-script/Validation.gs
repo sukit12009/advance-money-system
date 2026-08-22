@@ -1,10 +1,6 @@
 function validateTransactionInput(input) {
-  const type = String(input.type || "");
   if (!isIsoDate(input.date)) {
     throw appError("INVALID_DATE", "กรุณาระบุวันที่รูปแบบ YYYY-MM-DD");
-  }
-  if (VALID_TRANSACTION_TYPES.indexOf(type) === -1) {
-    throw appError("INVALID_TRANSACTION_TYPE", "ประเภทรายการไม่ถูกต้อง");
   }
   if (!sanitizeText(input.operationDate)) {
     throw appError("MISSING_OPERATION_DATE", "กรุณากรอกวันที่ดำเนินการ");
