@@ -81,9 +81,6 @@ export function CategoriesPage() {
           <div className="flex items-end gap-2">
             <Button
               type="submit"
-              disabled={
-                mutations.createCategory.isPending || mutations.updateCategory.isPending
-              }
             >
               {editing ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
               {editing ? "บันทึก" : "เพิ่ม"}

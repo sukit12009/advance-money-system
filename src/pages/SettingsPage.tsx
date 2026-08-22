@@ -49,9 +49,9 @@ export function SettingsPage() {
             </div>
           ))}
           <div className="flex justify-end">
-            <Button type="submit" disabled={mutation.isPending}>
+            <Button type="submit">
               <Save className="h-4 w-4" />
-              {mutation.isPending ? "กำลังบันทึก..." : "บันทึกการตั้งค่า"}
+              บันทึกการตั้งค่า
             </Button>
           </div>
         </form>

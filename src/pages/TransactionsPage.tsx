@@ -74,7 +74,7 @@ export function TransactionsPage() {
           type="button"
           variant="secondary"
           onClick={() => exportTransactionsToExcel(transactions)}
-          disabled={isLoading || transactions.length === 0}
+          disabled={transactions.length === 0}
         >
           <Download className="h-4 w-4" />
           Export Excel

@@ -84,10 +84,6 @@ export function PaymentTypesPage() {
           <div className="flex items-end gap-2">
             <Button
               type="submit"
-              disabled={
-                mutations.createPaymentType.isPending ||
-                mutations.updatePaymentType.isPending
-              }
             >
               {editing ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
               {editing ? "บันทึก" : "เพิ่ม"}

@@ -228,12 +228,12 @@ export function TransactionFormDialog({
         </div>
 
         <div className="flex justify-end gap-2 border-t border-border pt-4">
-          <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
+          <Button type="button" variant="secondary" onClick={onClose}>
             ยกเลิก
           </Button>
-          <Button type="submit" disabled={saving}>
+          <Button type="submit">
             <Save className="h-4 w-4" />
-            {saving ? "กำลังบันทึก..." : "บันทึก"}
+            บันทึก
           </Button>
         </div>
       </form>

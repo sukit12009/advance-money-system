@@ -42,12 +42,12 @@ export function DeleteTransactionDialog({
             </div>
           </dl>
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="secondary" onClick={onClose} disabled={deleting}>
+            <Button type="button" variant="secondary" onClick={onClose}>
               ยกเลิก
             </Button>
-            <Button type="button" variant="danger" onClick={onConfirm} disabled={deleting}>
+            <Button type="button" variant="danger" onClick={onConfirm}>
               <Trash2 className="h-4 w-4" />
-              {deleting ? "กำลังลบ..." : "ลบรายการ"}
+              ลบรายการ
             </Button>
           </div>
         </div>
