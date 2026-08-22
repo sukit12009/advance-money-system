@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import { EmptyState } from "@/components/common/EmptyState";
 import { SummaryCards } from "@/components/dashboard/SummaryCards";
 import { DeleteTransactionDialog } from "@/components/transactions/DeleteTransactionDialog";
@@ -12,6 +12,7 @@ import { usePaymentTypes } from "@/hooks/usePaymentTypes";
 import { useTransactionMutations, useTransactions } from "@/hooks/useTransactions";
 import type { TransactionFilters as Filters, TransactionRecord } from "@/types/transaction";
 import { summarizeTransactions } from "@/utils/balance";
+import { exportTransactionsToExcel } from "@/utils/exportTransactions";
 
 const emptyFilters: Filters = {
   search: "",
@@ -69,6 +70,15 @@ export function TransactionsPage() {
           <p className="text-sm text-muted-foreground">เพิ่ม แก้ไข ลบ ค้นหา และกรองรายการ</p>
           <h2 className="text-2xl font-semibold text-slate-950">รายการทั้งหมด</h2>
         </div>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => exportTransactionsToExcel(transactions)}
+          disabled={isLoading || transactions.length === 0}
+        >
+          <Download className="h-4 w-4" />
+          Export Excel
+        </Button>
         <Button
           type="button"
           onClick={() => {
