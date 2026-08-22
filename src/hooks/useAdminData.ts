@@ -10,6 +10,13 @@ export function useUsers() {
   });
 }
 
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => api.getCurrentUser(),
+  });
+}
+
 export function useUserMutations() {
   const queryClient = useQueryClient();
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["users"] });

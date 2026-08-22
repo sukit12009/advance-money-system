@@ -11,10 +11,12 @@ function routeGet(e) {
   }
 
   if (action === "categories") {
+    requirePermission("transactions:view");
     return jsonSuccess(CategoryService.list(parseBoolean(params.includeInactive)), "Success");
   }
 
   if (action === "paymentTypes") {
+    requirePermission("transactions:view");
     return jsonSuccess(PaymentTypeService.list(parseBoolean(params.includeInactive)), "Success");
   }
 
@@ -23,7 +25,12 @@ function routeGet(e) {
   }
 
   if (action === "settings") {
+    requirePermission("settings:manage");
     return jsonSuccess(SettingsService.list(), "Success");
+  }
+
+  if (action === "currentUser") {
+    return jsonSuccess(getCurrentUser(), "Success");
   }
 
   throw appError("ACTION_NOT_FOUND", "ไม่พบ API action ที่ต้องการ");

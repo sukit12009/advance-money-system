@@ -10,6 +10,8 @@ import {
   Users,
 } from "lucide-react";
 import { api } from "@/services/api";
+import { useCurrentUser } from "@/hooks/useAdminData";
+import { LoginPage } from "@/pages/LoginPage";
 import { cn } from "@/utils/cn";
 
 const navigation = [
@@ -22,6 +24,11 @@ const navigation = [
 ];
 
 export function AppLayout({ children }: { children: ReactNode }) {
+  const { data: currentUser, isLoading, error } = useCurrentUser();
+  if (isLoading) return null;
+  if (error || !currentUser) {
+    return <LoginPage message={error instanceof Error ? error.message : undefined} />;
+  }
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
       <aside className="border-b border-border bg-white lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
@@ -56,6 +63,17 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="hidden px-5 pb-5 lg:block">
+          <div className="mb-3 rounded-lg border border-border bg-white p-3 text-sm">
+            <p className="font-medium text-slate-900">
+              {currentUser?.name || "ผู้ใช้งาน"}
+            </p>
+            <p className="truncate text-xs text-muted-foreground">
+              {currentUser?.email || "กำลังตรวจสอบผู้ใช้..."}
+            </p>
+            {currentUser?.role ? (
+              <p className="mt-1 text-xs text-teal-700">สิทธิ์: {currentUser.role}</p>
+            ) : null}
+          </div>
           <div className="rounded-lg border border-border bg-slate-50 p-3 text-sm text-muted-foreground">
             โหมดข้อมูล:{" "}
             <span className="font-medium text-slate-800">

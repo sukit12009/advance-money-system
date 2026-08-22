@@ -1,7 +1,6 @@
 function getCurrentUser() {
   const activeEmail = Session.getActiveUser().getEmail();
-  const effectiveEmail = Session.getEffectiveUser().getEmail();
-  const email = String(activeEmail || effectiveEmail || "").toLowerCase();
+  const email = String(activeEmail || "").trim().toLowerCase();
   const users = SheetRepository.read(SHEET_NAMES.users).map(normalizeUser);
 
   if (users.length === 0 && email) {

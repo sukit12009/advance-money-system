@@ -169,6 +169,10 @@ export const api = {
     return request<AppUser[]>("users");
   },
 
+  getCurrentUser() {
+    return request<AppUser>("currentUser");
+  },
+
   createUser(data: UserInput) {
     return post<AppUser>({ action: "createUser", data });
   },
@@ -270,6 +274,10 @@ async function mockGet<T>(
 
   if (action === "users") {
     return readStorage(storageKeys.users, sampleUsers) as T;
+  }
+
+  if (action === "currentUser") {
+    return readStorage(storageKeys.users, sampleUsers)[0] as T;
   }
 
   if (action === "settings") {
