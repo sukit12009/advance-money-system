@@ -8,7 +8,6 @@ import {
   LogOut,
   LayoutDashboard,
   ReceiptText,
-  Settings,
   Users,
 } from "lucide-react";
 import { api } from "@/services/api";
@@ -22,7 +21,6 @@ const navigation = [
   { to: "/categories", label: "หมวดหมู่", icon: FolderTree },
   { to: "/payment-types", label: "ประเภทเอกสาร", icon: ReceiptText },
   { to: "/users", label: "ผู้ใช้งาน", icon: Users },
-  { to: "/settings", label: "ตั้งค่า", icon: Settings },
 ];
 
 export function AppLayout({ children }: { children: ReactNode }) {

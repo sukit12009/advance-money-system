@@ -55,24 +55,3 @@ export function useUserMutations() {
   return { createUser, updateUser, deleteUser };
 }
 
-export function useSettings() {
-  return useQuery({
-    queryKey: ["settings"],
-    queryFn: () => api.getSettings(),
-  });
-}
-
-export function useSettingMutation() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ key, value }: { key: string; value: string }) =>
-      api.updateSetting(key, value),
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["settings"] });
-      await queryClient.invalidateQueries({ queryKey: ["transactions"] });
-      toast.success("บันทึกการตั้งค่าสำเร็จ");
-    },
-    onError: (error) =>
-      toast.error(error instanceof Error ? error.message : "บันทึกการตั้งค่าไม่สำเร็จ"),
-  });
-}

@@ -1,6 +1,5 @@
 import type { Category, CategoryInput } from "@/types/category";
 import type { PaymentType, PaymentTypeInput } from "@/types/paymentType";
-import type { AppSetting } from "@/types/settings";
 import type {
   TransactionFilters,
   TransactionInput,
@@ -10,7 +9,6 @@ import type { AppUser, UserInput } from "@/types/user";
 import {
   sampleCategories,
   samplePaymentTypes,
-  sampleSettings,
   sampleTransactions,
   sampleUsers,
 } from "@/utils/sampleData";
@@ -39,7 +37,6 @@ type RequestPayload =
   | { action: "createUser"; data: UserInput }
   | { action: "updateUser"; id: string; data: Partial<UserInput> }
   | { action: "deleteUser"; id: string }
-  | { action: "updateSetting"; key: string; value: string };
 
 interface ApiEnvelope<T> {
   success: boolean;
@@ -209,13 +206,6 @@ export const api = {
     return post<{ id: string }>({ action: "deleteUser", id });
   },
 
-  getSettings() {
-    return request<AppSetting[]>("settings");
-  },
-
-  updateSetting(key: string, value: string) {
-    return post<AppSetting>({ action: "updateSetting", key, value });
-  },
 };
 
 const storageKeys = {
@@ -223,7 +213,6 @@ const storageKeys = {
   categories: "fern-expense-categories",
   paymentTypes: "fern-expense-payment-types",
   users: "fern-expense-users",
-  settings: "fern-expense-settings",
 };
 
 function readStorage<T>(key: string, fallback: T): T {
@@ -302,10 +291,6 @@ async function mockGet<T>(
 
   if (action === "currentUser") {
     return readStorage(storageKeys.users, sampleUsers)[0] as T;
-  }
-
-  if (action === "settings") {
-    return readStorage(storageKeys.settings, sampleSettings) as T;
   }
 
   throw new ApiError("ไม่พบ API action ที่ต้องการ", "ACTION_NOT_FOUND");
@@ -461,17 +446,6 @@ async function mockPost<T>(payload: RequestPayload) {
   if (payload.action === "deleteUser") {
     softDeleteCollectionItem(storageKeys.users, sampleUsers, payload.id);
     return { id: payload.id } as T;
-  }
-
-  if (payload.action === "updateSetting") {
-    const settings = readStorage(storageKeys.settings, sampleSettings);
-    const next = settings.some((item) => item.key === payload.key)
-      ? settings.map((item) =>
-          item.key === payload.key ? { ...item, value: payload.value } : item,
-        )
-      : [...settings, { key: payload.key, value: payload.value }];
-    writeStorage(storageKeys.settings, next);
-    return next.find((item) => item.key === payload.key) as T;
   }
 
   throw new ApiError("ไม่พบ API action ที่ต้องการ", "ACTION_NOT_FOUND");

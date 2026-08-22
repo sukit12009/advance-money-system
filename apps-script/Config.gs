@@ -3,7 +3,6 @@ const SHEET_NAMES = {
   categories: "categories",
   paymentTypes: "payment_types",
   users: "users",
-  settings: "settings",
 };
 
 const SHEET_HEADERS = {
@@ -27,7 +26,6 @@ const SHEET_HEADERS = {
   categories: ["id", "name", "active", "sortOrder"],
   paymentTypes: ["id", "name", "active", "sortOrder"],
   users: ["id", "email", "name", "role", "active", "passwordHash", "createdAt"],
-  settings: ["key", "value"],
 };
 
 const VALID_USER_ROLES = ["admin", "user"];
@@ -42,7 +40,6 @@ const ROLE_PERMISSIONS = {
     "categories:manage",
     "paymentTypes:manage",
     "users:manage",
-    "settings:manage",
   ],
   user: [
     "transactions:view",

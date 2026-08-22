@@ -85,7 +85,7 @@ function normalizeTransaction(record) {
 function attachBalances(transactions) {
   const categories = keyById(CategoryService.list(true));
   const paymentTypes = keyById(PaymentTypeService.list(true));
-  let balance = SettingsService.startingBalance();
+  let balance = 0;
 
   return transactions.sort(compareTransactions).map(function (transaction) {
     balance =

@@ -136,12 +136,6 @@ function seedInitialData() {
     { id: "PAY004", name: "เงินโอน", active: true, sortOrder: 4 },
   ]);
 
-  seedSheetIfEmpty(SHEET_NAMES.settings, [
-    { key: "startingBalance", value: "0" },
-    { key: "currency", value: "THB" },
-    { key: "timezone", value: "Asia/Bangkok" },
-  ]);
-
   seedSheetIfEmpty(SHEET_NAMES.transactions, [
     transactionSeed("TX-20260717-0001", "2026-07-17", "income", "17/07/2026", "เงินเรียนซ่อม", "CAT001", 80000, "PAY004", true, "2026-07-17T09:00:00+07:00"),
     transactionSeed("TX-20260803-0001", "2026-08-03", "expense", "03/08/2026", "เขาใหญ่", "CAT002", 7500, "PAY001", true, "2026-08-03T08:00:00+07:00"),
@@ -191,7 +185,6 @@ function getHeadersBySheetName(name) {
   if (name === SHEET_NAMES.categories) return SHEET_HEADERS.categories;
   if (name === SHEET_NAMES.paymentTypes) return SHEET_HEADERS.paymentTypes;
   if (name === SHEET_NAMES.users) return SHEET_HEADERS.users;
-  if (name === SHEET_NAMES.settings) return SHEET_HEADERS.settings;
   throw appError("SHEET_NOT_FOUND", "ไม่พบชีต " + name);
 }
 

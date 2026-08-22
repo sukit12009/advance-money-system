@@ -1,6 +1,5 @@
 import type { Category } from "@/types/category";
 import type { PaymentType } from "@/types/paymentType";
-import type { AppSetting } from "@/types/settings";
 import type { TransactionRecord } from "@/types/transaction";
 import type { AppUser } from "@/types/user";
 import { calculateRunningBalances } from "./balance";
@@ -32,11 +31,6 @@ export const sampleUsers: AppUser[] = [
   },
 ];
 
-export const sampleSettings: AppSetting[] = [
-  { key: "startingBalance", value: "0" },
-  { key: "currency", value: "THB" },
-  { key: "timezone", value: "Asia/Bangkok" },
-];
 
 const baseTransactions: Omit<TransactionRecord, "balance">[] = [
   {

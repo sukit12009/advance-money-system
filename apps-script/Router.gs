@@ -25,11 +25,6 @@ function routeGet(e) {
     return jsonSuccess(UserService.list(), "Success");
   }
 
-  if (action === "settings") {
-    requirePermission("settings:manage");
-    return jsonSuccess(SettingsService.list(), "Success");
-  }
-
   if (action === "currentUser") {
     return jsonSuccess(getCurrentUser(), "Success");
   }
@@ -128,10 +123,6 @@ function routePost(e) {
 
   if (action === "deleteUser") {
     return jsonSuccess(UserService.remove(body.id), "ปิดใช้งานผู้ใช้งานแล้ว");
-  }
-
-  if (action === "updateSetting") {
-    return jsonSuccess(SettingsService.update(body.key, body.value), "บันทึกการตั้งค่าสำเร็จ");
   }
 
   throw appError("ACTION_NOT_FOUND", "ไม่พบ API action ที่ต้องการ");
