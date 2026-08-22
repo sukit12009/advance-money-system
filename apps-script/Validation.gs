@@ -1,4 +1,5 @@
 function validateTransactionInput(input) {
+  const type = String(input.type || "");
   if (!isIsoDate(input.date)) {
     throw appError("INVALID_DATE", "กรุณาระบุวันที่รูปแบบ YYYY-MM-DD");
   }
