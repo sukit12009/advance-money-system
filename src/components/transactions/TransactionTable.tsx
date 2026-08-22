@@ -16,6 +16,7 @@ interface TransactionTableProps {
   transactions: TransactionRecord[];
   loading?: boolean;
   onEdit: (transaction: TransactionRecord) => void;
+  onView: (transaction: TransactionRecord) => void;
   onDelete: (transaction: TransactionRecord) => void;
 }
 
@@ -25,6 +26,7 @@ export function TransactionTable({
   transactions,
   loading,
   onEdit,
+  onView,
   onDelete,
 }: TransactionTableProps) {
   const [page, setPage] = useState(1);
@@ -144,7 +146,7 @@ export function TransactionTable({
                           variant="ghost"
                           title="ดู"
                           aria-label="ดู"
-                          onClick={() => onEdit(transaction)}
+                          onClick={() => onView(transaction)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

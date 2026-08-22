@@ -18,6 +18,7 @@ interface TransactionFormDialogProps {
   paymentTypes: PaymentType[];
   initialTransaction?: TransactionRecord | null;
   saving: boolean;
+  readOnly?: boolean;
   onClose: () => void;
   onSubmit: (values: TransactionFormValues) => Promise<void>;
 }
@@ -42,6 +43,7 @@ export function TransactionFormDialog({
   paymentTypes,
   initialTransaction,
   saving,
+  readOnly = false,
   onClose,
   onSubmit,
 }: TransactionFormDialogProps) {
@@ -103,6 +105,7 @@ export function TransactionFormDialog({
       description="ข้อมูลจะถูกส่งผ่าน API ไปยัง Google Apps Script เท่านั้น"
     >
       <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <fieldset disabled={readOnly} className="grid gap-4">
         <div className="grid gap-4 md:grid-cols-2">
           <div>
             <Label htmlFor="transactionDate">วันที่</Label>
@@ -227,14 +230,17 @@ export function TransactionFormDialog({
           <FieldError message={errors.note?.message} />
         </div>
 
+        </fieldset>
         <div className="flex justify-end gap-2 border-t border-border pt-4">
           <Button type="button" variant="secondary" onClick={onClose}>
             ยกเลิก
           </Button>
-          <Button type="submit">
-            <Save className="h-4 w-4" />
-            บันทึก
-          </Button>
+          {!readOnly ? (
+            <Button type="submit">
+              <Save className="h-4 w-4" />
+              บันทึก
+            </Button>
+          ) : null}
         </div>
       </form>
     </Modal>

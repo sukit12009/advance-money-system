@@ -41,6 +41,12 @@ const CategoryService = {
     SheetRepository.updateById(SHEET_NAMES.categories, id, next);
     return { id: id };
   },
+
+  destroy: function (id) {
+    requirePermission("categories:manage");
+    SheetRepository.deleteById(SHEET_NAMES.categories, id);
+    return { id: id };
+  },
 };
 
 function normalizeCategory(record) {

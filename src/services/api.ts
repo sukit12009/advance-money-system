@@ -31,9 +31,11 @@ type RequestPayload =
   | { action: "createCategory"; data: CategoryInput }
   | { action: "updateCategory"; id: string; data: Partial<CategoryInput> }
   | { action: "deleteCategory"; id: string }
+  | { action: "disableCategory"; id: string }
   | { action: "createPaymentType"; data: PaymentTypeInput }
   | { action: "updatePaymentType"; id: string; data: Partial<PaymentTypeInput> }
   | { action: "deletePaymentType"; id: string }
+  | { action: "disablePaymentType"; id: string }
   | { action: "createUser"; data: UserInput }
   | { action: "updateUser"; id: string; data: Partial<UserInput> }
   | { action: "deleteUser"; id: string }
@@ -170,6 +172,10 @@ export const api = {
     return post<{ id: string }>({ action: "deleteCategory", id });
   },
 
+  disableCategory(id: string) {
+    return post<{ id: string }>({ action: "disableCategory", id });
+  },
+
   getPaymentTypes(includeInactive = false) {
     return request<PaymentType[]>("paymentTypes", { includeInactive });
   },
@@ -184,6 +190,10 @@ export const api = {
 
   deletePaymentType(id: string) {
     return post<{ id: string }>({ action: "deletePaymentType", id });
+  },
+
+  disablePaymentType(id: string) {
+    return post<{ id: string }>({ action: "disablePaymentType", id });
   },
 
   getUsers() {
@@ -395,6 +405,11 @@ async function mockPost<T>(payload: RequestPayload) {
   }
 
   if (payload.action === "deleteCategory") {
+    deleteCollectionItem(storageKeys.categories, sampleCategories, payload.id);
+    return { id: payload.id } as T;
+  }
+
+  if (payload.action === "disableCategory") {
     softDeleteCollectionItem(storageKeys.categories, sampleCategories, payload.id);
     return { id: payload.id } as T;
   }
@@ -419,6 +434,11 @@ async function mockPost<T>(payload: RequestPayload) {
   }
 
   if (payload.action === "deletePaymentType") {
+    deleteCollectionItem(storageKeys.paymentTypes, samplePaymentTypes, payload.id);
+    return { id: payload.id } as T;
+  }
+
+  if (payload.action === "disablePaymentType") {
     softDeleteCollectionItem(storageKeys.paymentTypes, samplePaymentTypes, payload.id);
     return { id: payload.id } as T;
   }
@@ -475,6 +495,15 @@ function softDeleteCollectionItem<TItem extends { id: string; active?: boolean }
     item.id === id && "active" in item ? { ...item, active: false } : item,
   );
   writeStorage(key, next);
+}
+
+function deleteCollectionItem<TItem extends { id: string }>(
+  key: string,
+  fallback: TItem[],
+  id: string,
+) {
+  const items = readStorage(key, fallback);
+  writeStorage(key, items.filter((item) => item.id !== id));
 }
 
 function nextTransactionId(date: string, transactions: TransactionRecord[]) {

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Edit, Plus, Power, Save } from "lucide-react";
+import { Edit, Plus, Power, Save, Trash2 } from "lucide-react";
 import { LoadingBlock } from "@/components/common/LoadingBlock";
+import { ConfirmDeleteDialog } from "@/components/common/ConfirmDeleteDialog";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/FormControls";
 import { useCategories, useCategoryMutations } from "@/hooks/useCategories";
 import type { Category, CategoryInput } from "@/types/category";
+import { useCurrentUser } from "@/hooks/useAdminData";
 
 const emptyCategory: CategoryInput = {
   name: "",
@@ -20,6 +22,10 @@ export function CategoriesPage() {
   const mutations = useCategoryMutations();
   const [editing, setEditing] = useState<Category | null>(null);
   const [form, setForm] = useState<CategoryInput>(emptyCategory);
+  const [deleting, setDeleting] = useState<Category | null>(null);
+  const [deleteMode, setDeleteMode] = useState<"disable" | "delete">("disable");
+  const { data: currentUser } = useCurrentUser();
+  const isAdmin = currentUser?.role === "admin";
 
   useEffect(() => {
     if (!editing) return;
@@ -136,15 +142,18 @@ export function CategoriesPage() {
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button
+                    {isAdmin ? <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       aria-label="ปิดใช้งาน"
-                      onClick={() => mutations.deleteCategory.mutate(category.id)}
+                      onClick={() => { setDeleteMode("disable"); setDeleting(category); }}
                     >
                       <Power className="h-4 w-4 text-amber-700" />
-                    </Button>
+                    </Button> : null}
+                    {isAdmin ? <Button type="button" variant="ghost" size="icon" aria-label="ลบ" onClick={() => { setDeleteMode("delete"); setDeleting(category); }}>
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button> : null}
                   </div>
                 </td>
               </tr>
@@ -152,6 +161,19 @@ export function CategoriesPage() {
           </tbody>
         </table>
       </section>
+      <ConfirmDeleteDialog
+        open={Boolean(deleting)}
+        title={deleteMode === "delete" ? "ลบหมวดหมู่" : "ปิดใช้งานหมวดหมู่"}
+        itemName={deleting?.name ?? ""}
+        actionLabel={deleteMode === "delete" ? "ลบ" : "ปิดใช้งาน"}
+        onClose={() => setDeleting(null)}
+        onConfirm={async () => {
+          if (!deleting) return;
+          if (deleteMode === "delete") await mutations.deleteCategory.mutateAsync(deleting.id);
+          else await mutations.disableCategory.mutateAsync(deleting.id);
+          setDeleting(null);
+        }}
+      />
     </div>
   );
 }

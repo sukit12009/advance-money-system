@@ -4,23 +4,28 @@ import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/FormControls";
 import { api } from "@/services/api";
+import { ApiLoadingOverlay } from "@/components/common/ApiLoadingOverlay";
 
 export function LoginPage({ message }: { message?: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(message || "");
+  const [submitting, setSubmitting] = useState(false);
   async function submit(event: FormEvent) {
     event.preventDefault();
+    setSubmitting(true);
     try {
       const result = await api.login(email, password);
       localStorage.setItem("fern-auth-token", result.token);
       window.location.reload();
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "เข้าสู่ระบบไม่สำเร็จ");
+      setSubmitting(false);
     }
   }
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
+      <ApiLoadingOverlay open={submitting} />
       <section className="w-full max-w-md rounded-xl border border-border bg-white p-8 text-center shadow-sm">
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-teal-50 text-teal-700">
           <LogIn className="h-6 w-6" />

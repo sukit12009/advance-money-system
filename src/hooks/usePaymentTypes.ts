@@ -46,6 +46,18 @@ export function usePaymentTypeMutations() {
     mutationFn: (id: string) => api.deletePaymentType(id),
     onSuccess: async () => {
       await invalidate();
+      toast.success("ลบประเภทเอกสารสำเร็จ");
+    },
+    onError: (error) =>
+      toast.error(
+        error instanceof Error ? error.message : "ปิดใช้งานประเภทเอกสารไม่สำเร็จ",
+      ),
+  });
+
+  const disablePaymentType = useMutation({
+    mutationFn: (id: string) => api.disablePaymentType(id),
+    onSuccess: async () => {
+      await invalidate();
       toast.success("ปิดใช้งานประเภทเอกสารแล้ว");
     },
     onError: (error) =>
@@ -54,5 +66,5 @@ export function usePaymentTypeMutations() {
       ),
   });
 
-  return { createPaymentType, updatePaymentType, deletePaymentType };
+  return { createPaymentType, updatePaymentType, deletePaymentType, disablePaymentType };
 }

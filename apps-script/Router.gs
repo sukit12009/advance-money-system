@@ -95,7 +95,11 @@ function routePost(e) {
   }
 
   if (action === "deleteCategory") {
-    return jsonSuccess(CategoryService.remove(body.id), "ปิดใช้งานหมวดหมู่แล้ว");
+    return jsonSuccess(CategoryService.destroy(body.id), "ลบหมวดหมู่สำเร็จ");
+  }
+
+  if (action === "disableCategory") {
+    return jsonSuccess(CategoryService.remove(body.id), "ปิดใช้งานหมวดหมู่สำเร็จ");
   }
 
   if (action === "createPaymentType") {
@@ -110,7 +114,11 @@ function routePost(e) {
   }
 
   if (action === "deletePaymentType") {
-    return jsonSuccess(PaymentTypeService.remove(body.id), "ปิดใช้งานประเภทเอกสารแล้ว");
+    return jsonSuccess(PaymentTypeService.destroy(body.id), "ลบประเภทเอกสารสำเร็จ");
+  }
+
+  if (action === "disablePaymentType") {
+    return jsonSuccess(PaymentTypeService.remove(body.id), "ปิดใช้งานประเภทเอกสารสำเร็จ");
   }
 
   if (action === "createUser") {

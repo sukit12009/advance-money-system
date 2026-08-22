@@ -45,6 +45,12 @@ const PaymentTypeService = {
     SheetRepository.updateById(SHEET_NAMES.paymentTypes, id, next);
     return { id: id };
   },
+
+  destroy: function (id) {
+    requirePermission("paymentTypes:manage");
+    SheetRepository.deleteById(SHEET_NAMES.paymentTypes, id);
+    return { id: id };
+  },
 };
 
 function normalizePaymentType(record) {

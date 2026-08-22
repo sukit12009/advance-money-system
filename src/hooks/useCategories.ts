@@ -42,11 +42,21 @@ export function useCategoryMutations() {
     mutationFn: (id: string) => api.deleteCategory(id),
     onSuccess: async () => {
       await invalidate();
+      toast.success("ลบหมวดหมู่สำเร็จ");
+    },
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "ปิดใช้งานหมวดหมู่ไม่สำเร็จ"),
+  });
+
+  const disableCategory = useMutation({
+    mutationFn: (id: string) => api.disableCategory(id),
+    onSuccess: async () => {
+      await invalidate();
       toast.success("ปิดใช้งานหมวดหมู่แล้ว");
     },
     onError: (error) =>
       toast.error(error instanceof Error ? error.message : "ปิดใช้งานหมวดหมู่ไม่สำเร็จ"),
   });
 
-  return { createCategory, updateCategory, deleteCategory };
+  return { createCategory, updateCategory, deleteCategory, disableCategory };
 }

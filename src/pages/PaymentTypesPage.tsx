@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { Edit, Plus, Power, Save } from "lucide-react";
+import { Edit, Plus, Power, Save, Trash2 } from "lucide-react";
 import { LoadingBlock } from "@/components/common/LoadingBlock";
+import { ConfirmDeleteDialog } from "@/components/common/ConfirmDeleteDialog";
 import { PageHeader } from "@/components/common/PageHeader";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -11,6 +12,7 @@ import {
   usePaymentTypes,
 } from "@/hooks/usePaymentTypes";
 import type { PaymentType, PaymentTypeInput } from "@/types/paymentType";
+import { useCurrentUser } from "@/hooks/useAdminData";
 
 const emptyPaymentType: PaymentTypeInput = {
   name: "",
@@ -23,6 +25,10 @@ export function PaymentTypesPage() {
   const mutations = usePaymentTypeMutations();
   const [editing, setEditing] = useState<PaymentType | null>(null);
   const [form, setForm] = useState<PaymentTypeInput>(emptyPaymentType);
+  const [deleting, setDeleting] = useState<PaymentType | null>(null);
+  const [deleteMode, setDeleteMode] = useState<"disable" | "delete">("disable");
+  const { data: currentUser } = useCurrentUser();
+  const isAdmin = currentUser?.role === "admin";
 
   useEffect(() => {
     if (!editing) return;
@@ -139,15 +145,18 @@ export function PaymentTypesPage() {
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button
+                    {isAdmin ? <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       aria-label="ปิดใช้งาน"
-                      onClick={() => mutations.deletePaymentType.mutate(paymentType.id)}
+                      onClick={() => { setDeleteMode("disable"); setDeleting(paymentType); }}
                     >
                       <Power className="h-4 w-4 text-amber-700" />
-                    </Button>
+                    </Button> : null}
+                    {isAdmin ? <Button type="button" variant="ghost" size="icon" aria-label="ลบ" onClick={() => { setDeleteMode("delete"); setDeleting(paymentType); }}>
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button> : null}
                   </div>
                 </td>
               </tr>
@@ -155,6 +164,19 @@ export function PaymentTypesPage() {
           </tbody>
         </table>
       </section>
+      <ConfirmDeleteDialog
+        open={Boolean(deleting)}
+        title={deleteMode === "delete" ? "ลบประเภทเอกสาร" : "ปิดใช้งานประเภทเอกสาร"}
+        itemName={deleting?.name ?? ""}
+        actionLabel={deleteMode === "delete" ? "ลบ" : "ปิดใช้งาน"}
+        onClose={() => setDeleting(null)}
+        onConfirm={async () => {
+          if (!deleting) return;
+          if (deleteMode === "delete") await mutations.deletePaymentType.mutateAsync(deleting.id);
+          else await mutations.disablePaymentType.mutateAsync(deleting.id);
+          setDeleting(null);
+        }}
+      />
     </div>
   );
 }

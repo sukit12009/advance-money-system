@@ -27,6 +27,7 @@ const emptyFilters: Filters = {
 export function TransactionsPage() {
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [editing, setEditing] = useState<TransactionRecord | null>(null);
+  const [viewing, setViewing] = useState<TransactionRecord | null>(null);
   const [deleting, setDeleting] = useState<TransactionRecord | null>(null);
   const [formOpen, setFormOpen] = useState(false);
 
@@ -120,19 +121,22 @@ export function TransactionsPage() {
             setEditing(transaction);
             setFormOpen(true);
           }}
+          onView={(transaction) => setViewing(transaction)}
           onDelete={setDeleting}
         />
       )}
 
       <TransactionFormDialog
-        open={formOpen}
+        open={formOpen || Boolean(viewing)}
         categories={categories}
         paymentTypes={paymentTypes}
-        initialTransaction={editing}
+        initialTransaction={editing ?? viewing}
+        readOnly={Boolean(viewing)}
         saving={saving}
         onClose={() => {
           setFormOpen(false);
           setEditing(null);
+          setViewing(null);
         }}
         onSubmit={handleSubmit}
       />
