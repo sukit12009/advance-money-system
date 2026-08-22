@@ -14,4 +14,5 @@ export interface UserInput {
   name: string;
   role: UserRole;
   active: boolean;
+  password?: string;
 }

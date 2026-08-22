@@ -74,6 +74,9 @@ function validateUserInput(input) {
   if (!sanitizeText(input.name)) {
     throw appError("MISSING_NAME", "กรุณากรอกชื่อผู้ใช้งาน");
   }
+  if (input.password !== undefined && String(input.password || "").length < 8) {
+    throw appError("INVALID_PASSWORD", "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
+  }
   if (VALID_USER_ROLES.indexOf(role) === -1) {
     throw appError("INVALID_ROLE", "สิทธิ์ผู้ใช้งานไม่ถูกต้อง");
   }
@@ -82,5 +85,6 @@ function validateUserInput(input) {
     name: sanitizeText(input.name),
     role: role,
     active: input.active === true || input.active === false ? input.active : normalizeBoolean(input.active),
+    password: String(input.password || ""),
   };
 }

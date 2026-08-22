@@ -4,6 +4,7 @@ import {
   Banknote,
   FileSpreadsheet,
   FolderTree,
+  LogOut,
   LayoutDashboard,
   ReceiptText,
   Settings,
@@ -63,17 +64,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="hidden px-5 pb-5 lg:block">
-          <div className="mb-3 rounded-lg border border-border bg-white p-3 text-sm">
-            <p className="font-medium text-slate-900">
-              {currentUser?.name || "ผู้ใช้งาน"}
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              {currentUser?.email || "กำลังตรวจสอบผู้ใช้..."}
-            </p>
-            {currentUser?.role ? (
-              <p className="mt-1 text-xs text-teal-700">สิทธิ์: {currentUser.role}</p>
-            ) : null}
-          </div>
           <div className="rounded-lg border border-border bg-slate-50 p-3 text-sm text-muted-foreground">
             โหมดข้อมูล:{" "}
             <span className="font-medium text-slate-800">
@@ -83,8 +73,28 @@ export function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">{children}</div>
+      <main className="min-w-0 px-4 pb-5 pt-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-end gap-2 border-b border-border bg-white px-4 shadow-sm sm:gap-3 sm:px-6 lg:left-[260px] lg:px-8">
+            <div className="min-w-0 text-right">
+              <p className="text-sm font-medium text-slate-900">{currentUser.name}</p>
+              <p className="max-w-[180px] truncate text-xs text-muted-foreground sm:max-w-none">{currentUser.email}</p>
+              <p className="text-xs text-teal-700">สิทธิ์: {currentUser.role}</p>
+            </div>
+            <button
+              type="button"
+              className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              onClick={() => {
+                window.localStorage.removeItem("fern-auth-token");
+                window.location.reload();
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
+          </header>
+          {children}
+        </div>
       </main>
     </div>
   );

@@ -97,6 +97,12 @@ function ensureSheets() {
     if (!hasHeader) {
       sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     }
+    if (name === SHEET_NAMES.users && !firstRow.some(function (cell) { return String(cell) === "passwordHash"; })) {
+      const users = SheetRepository.read(name).map(function (record) {
+        return Object.assign({}, record, { passwordHash: record.passwordHash || "" });
+      });
+      SheetRepository.write(name, users);
+    }
     if (
       name === SHEET_NAMES.transactions &&
       firstRow.some(function (cell) { return String(cell) === "operationDate"; })
@@ -128,18 +134,6 @@ function seedInitialData() {
     { id: "PAY002", name: "ว.13", active: true, sortOrder: 2 },
     { id: "PAY003", name: "ยืม", active: true, sortOrder: 3 },
     { id: "PAY004", name: "เงินโอน", active: true, sortOrder: 4 },
-  ]);
-
-  const email = Session.getEffectiveUser().getEmail() || "admin@example.com";
-  seedSheetIfEmpty(SHEET_NAMES.users, [
-    {
-      id: "USR001",
-      email: email,
-      name: "ผู้ดูแลระบบ",
-      role: "admin",
-      active: true,
-      createdAt: nowIso(),
-    },
   ]);
 
   seedSheetIfEmpty(SHEET_NAMES.settings, [

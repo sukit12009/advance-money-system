@@ -1,7 +1,24 @@
+import { useState } from "react";
+import type { FormEvent } from "react";
 import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input, Label } from "@/components/ui/FormControls";
+import { api } from "@/services/api";
 
 export function LoginPage({ message }: { message?: string }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(message || "");
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    try {
+      const result = await api.login(email, password);
+      localStorage.setItem("fern-auth-token", result.token);
+      window.location.reload();
+    } catch (loginError) {
+      setError(loginError instanceof Error ? loginError.message : "เข้าสู่ระบบไม่สำเร็จ");
+    }
+  }
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
       <section className="w-full max-w-md rounded-xl border border-border bg-white p-8 text-center shadow-sm">
@@ -12,10 +29,12 @@ export function LoginPage({ message }: { message?: string }) {
         <p className="mt-2 text-sm text-muted-foreground">
           กรุณาเข้าสู่ระบบด้วย Google Account ที่ได้รับอนุญาต
         </p>
-        {message ? <p className="mt-3 text-sm text-red-600">{message}</p> : null}
-        <Button type="button" className="mt-6 w-full" onClick={() => window.location.reload()}>
-          เข้าสู่ระบบด้วย Google
-        </Button>
+        <form className="mt-6 grid gap-3 text-left" onSubmit={submit}>
+          <div><Label htmlFor="loginEmail">อีเมล</Label><Input id="loginEmail" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></div>
+          <div><Label htmlFor="loginPassword">รหัสผ่าน</Label><Input id="loginPassword" type="password" required value={password} onChange={(event) => setPassword(event.target.value)} /></div>
+          {error ? <p className="text-sm text-red-600">{error}</p> : null}
+          <Button type="submit" className="w-full"><LogIn className="h-4 w-4" />เข้าสู่ระบบ</Button>
+        </form>
       </section>
     </main>
   );

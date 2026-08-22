@@ -1,5 +1,6 @@
 function routeGet(e) {
   const params = e.parameter || {};
+  REQUEST_AUTH_TOKEN = params.authToken || "";
   const action = params.action || "";
 
   if (action === "transactions") {
@@ -38,7 +39,26 @@ function routeGet(e) {
 
 function routePost(e) {
   const body = parseRequestBody(e);
+  REQUEST_AUTH_TOKEN = body.authToken || "";
   const action = body.action || "";
+
+  if (action === "registerUser") {
+    return jsonSuccess(UserService.register(body.data || {}), "สร้างผู้ใช้สำเร็จ");
+  }
+
+  if (action === "login") {
+    const data = body.data || {};
+    const users = SheetRepository.read(SHEET_NAMES.users).map(normalizeUser);
+    const rawUsers = SheetRepository.read(SHEET_NAMES.users);
+    const index = users.findIndex(function (user) { return user.email === String(data.email || "").trim().toLowerCase(); });
+    const raw = index >= 0 ? rawUsers[index] : null;
+    if (!raw || !normalizeBoolean(raw.active) || raw.passwordHash !== hashPassword(data.password || "")) {
+      throw appError("INVALID_LOGIN", "อีเมลหรือรหัสผ่านไม่ถูกต้อง");
+    }
+    const token = Utilities.getUuid();
+    CacheService.getScriptCache().put("auth:" + token, users[index].email, 21600);
+    return jsonSuccess({ token: token, user: users[index] }, "เข้าสู่ระบบสำเร็จ");
+  }
 
   if (action === "createTransaction") {
     return jsonSuccess(TransactionService.create(body.data || {}), "บันทึกรายการสำเร็จ");

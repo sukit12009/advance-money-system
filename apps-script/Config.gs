@@ -26,7 +26,7 @@ const SHEET_HEADERS = {
   ],
   categories: ["id", "name", "active", "sortOrder"],
   paymentTypes: ["id", "name", "active", "sortOrder"],
-  users: ["id", "email", "name", "role", "active", "createdAt"],
+  users: ["id", "email", "name", "role", "active", "passwordHash", "createdAt"],
   settings: ["key", "value"],
 };
 

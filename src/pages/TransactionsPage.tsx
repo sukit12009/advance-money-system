@@ -70,15 +70,7 @@ export function TransactionsPage() {
           <p className="text-sm text-muted-foreground">เพิ่ม แก้ไข ลบ ค้นหา และกรองรายการ</p>
           <h2 className="text-2xl font-semibold text-slate-950">รายการทั้งหมด</h2>
         </div>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => exportTransactionsToExcel(transactions)}
-          disabled={transactions.length === 0}
-        >
-          <Download className="h-4 w-4" />
-          Export Excel
-        </Button>
+        <div className="flex items-center gap-2 sm:ml-auto">
         <Button
           type="button"
           onClick={() => {
@@ -89,6 +81,16 @@ export function TransactionsPage() {
           <Plus className="h-4 w-4" />
           เพิ่มรายการ
         </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => exportTransactionsToExcel(transactions)}
+          disabled={transactions.length === 0}
+        >
+          <Download className="h-4 w-4" />
+          Export Excel
+        </Button>
+        </div>
       </div>
 
       <SummaryCards summary={summary} />

@@ -24,6 +24,8 @@ import { nowBangkokIso } from "@/utils/date";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() ?? "";
 
 type RequestPayload =
+  | { action: "login"; data: { email: string; password: string } }
+  | { action: "registerUser"; data: UserInput }
   | { action: "createTransaction"; data: TransactionInput }
   | { action: "updateTransaction"; id: string; data: Partial<TransactionInput> }
   | { action: "deleteTransaction"; id: string }
@@ -69,6 +71,8 @@ async function request<T>(action: string, params: Record<string, unknown> = {}):
 
   const url = new URL(API_BASE_URL);
   url.searchParams.set("action", action);
+  const token = window.localStorage.getItem("fern-auth-token");
+  if (token) url.searchParams.set("authToken", token);
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== "") {
       url.searchParams.set(key, String(value));
@@ -84,12 +88,16 @@ async function post<T>(payload: RequestPayload): Promise<T> {
     return mockPost<T>(payload);
   }
 
+  const token = window.localStorage.getItem("fern-auth-token");
+  const requestPayload = token && payload.action !== "login"
+    ? { ...payload, authToken: token }
+    : payload;
   const response = await fetch(API_BASE_URL, {
     method: "POST",
     headers: {
       "Content-Type": "text/plain;charset=utf-8",
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(requestPayload),
   });
 
   return unwrapResponse<T>(response);
@@ -112,6 +120,14 @@ async function unwrapResponse<T>(response: Response): Promise<T> {
 
 export const api = {
   mode: isRemoteApiEnabled() ? "remote" : "demo",
+
+  login(email: string, password: string) {
+    return post<{ token: string; user: AppUser }>({ action: "login", data: { email, password } });
+  },
+
+  registerUser(data: UserInput) {
+    return post<AppUser>({ action: "registerUser", data });
+  },
 
   getTransactions(filters: TransactionFilters = {}) {
     return request<TransactionRecord[]>("transactions", { ...filters });
@@ -289,6 +305,29 @@ async function mockGet<T>(
 
 async function mockPost<T>(payload: RequestPayload) {
   await delay(220);
+
+  if (payload.action === "login") {
+    const users = readStorage(storageKeys.users, sampleUsers);
+    const user = users.find((item) => item.email === payload.data.email);
+    if (!user || payload.data.password.length < 8) {
+      throw new ApiError("อีเมลหรือรหัสผ่านไม่ถูกต้อง", "INVALID_LOGIN");
+    }
+    return { token: "demo-token", user } as T;
+  }
+
+  if (payload.action === "registerUser") {
+    const users = readStorage(storageKeys.users, sampleUsers);
+    const created: AppUser = {
+      id: nextId("USR", users.length + 1),
+      email: payload.data.email,
+      name: payload.data.name,
+      role: users.length === 0 ? "admin" : "user",
+      active: true,
+      createdAt: nowBangkokIso(),
+    };
+    writeStorage(storageKeys.users, [...users, created]);
+    return created as T;
+  }
 
   if (payload.action === "createTransaction") {
     const transactions = readStorage(storageKeys.transactions, sampleTransactions);

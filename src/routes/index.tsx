@@ -6,8 +6,10 @@ import { PaymentTypesPage } from "@/pages/PaymentTypesPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { TransactionsPage } from "@/pages/TransactionsPage";
 import { UsersPage } from "@/pages/UsersPage";
+import { CreateUserPage } from "@/pages/CreateUserPage";
 
 export const router = createBrowserRouter([
+  { path: "/users/create", element: <CreateUserPage /> },
   {
     path: "/",
     element: <App />,

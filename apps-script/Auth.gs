@@ -1,6 +1,9 @@
 function getCurrentUser() {
-  const activeEmail = Session.getActiveUser().getEmail();
-  const email = String(activeEmail || "").trim().toLowerCase();
+  const token = String(REQUEST_AUTH_TOKEN || "");
+  const email = token
+    ? String(CacheService.getScriptCache().get("auth:" + token) || "").toLowerCase()
+    : "";
+  if (!email) throw appError("UNAUTHORIZED", "กรุณาเข้าสู่ระบบ");
   const users = SheetRepository.read(SHEET_NAMES.users).map(normalizeUser);
 
   if (users.length === 0 && email) {
@@ -22,6 +25,16 @@ function getCurrentUser() {
   }
 
   return user;
+}
+
+var REQUEST_AUTH_TOKEN = "";
+
+function hashPassword(password) {
+  const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(password));
+  return bytes.map(function (byte) {
+    const value = byte < 0 ? byte + 256 : byte;
+    return (value < 16 ? "0" : "") + value.toString(16);
+  }).join("");
 }
 
 function requirePermission(permission) {
