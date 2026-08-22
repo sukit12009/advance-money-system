@@ -99,7 +99,12 @@ export function TransactionTable({
                         {TRANSACTION_TYPE_LABEL[transaction.type]}
                       </Badge>
                     </td>
-                    <td className="px-3 py-3">{transaction.operationDate}</td>
+                    <td className="px-3 py-3">
+                      {transaction.operationDateStart ?? transaction.operationDate ?? "-"}
+                      {transaction.operationDateEnd && transaction.operationDateEnd !== transaction.operationDateStart
+                        ? ` - ${transaction.operationDateEnd}`
+                        : ""}
+                    </td>
                     <td className="px-3 py-3">
                       <div className="font-medium text-slate-900">
                         {transaction.description}

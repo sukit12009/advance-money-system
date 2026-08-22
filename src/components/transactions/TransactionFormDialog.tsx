@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -10,7 +10,7 @@ import type { Category } from "@/types/category";
 import type { PaymentType } from "@/types/paymentType";
 import type { TransactionRecord } from "@/types/transaction";
 import { TRANSACTION_TYPES } from "@/types/transaction";
-import { todayIsoDate } from "@/utils/date";
+import { formatDateRangeInput, todayIsoDate } from "@/utils/date";
 
 interface TransactionFormDialogProps {
   open: boolean;
@@ -26,6 +26,8 @@ const defaultValues: TransactionFormValues = {
   date: todayIsoDate(),
   type: "expense",
   operationDate: todayIsoDate(),
+  operationDateStart: todayIsoDate(),
+  operationDateEnd: todayIsoDate(),
   description: "",
   categoryId: "",
   amount: 0,
@@ -57,6 +59,9 @@ export function TransactionFormDialog({
 
   const selectedType = watch("type");
   const selectedCategoryId = watch("categoryId");
+  const operationDateStart = watch("operationDateStart");
+  const operationDateEnd = watch("operationDateEnd");
+  const [operationDatePickerOpen, setOperationDatePickerOpen] = useState(false);
   const availableCategories = categories.filter((category) => category.active);
   const availablePaymentTypes = paymentTypes.filter((paymentType) => paymentType.active);
 
@@ -66,7 +71,9 @@ export function TransactionFormDialog({
       reset({
         date: initialTransaction.date,
         type: initialTransaction.type,
-        operationDate: initialTransaction.operationDate,
+        operationDate: todayIsoDate(),
+        operationDateStart: initialTransaction.operationDateStart ?? initialTransaction.operationDate ?? "",
+        operationDateEnd: initialTransaction.operationDateEnd ?? initialTransaction.operationDateStart ?? initialTransaction.operationDate ?? "",
         description: initialTransaction.description,
         categoryId: initialTransaction.categoryId,
         amount: initialTransaction.amount,
@@ -117,7 +124,40 @@ export function TransactionFormDialog({
 
           <div>
             <Label htmlFor="operationDate">วันที่ดำเนินการ</Label>
-            <Input id="operationDate" {...register("operationDate")} />
+            <div className="relative">
+              <Input
+                id="operationDate"
+                readOnly
+                value={
+                  operationDateStart && operationDateEnd
+                    ? `${formatDateRangeInput(operationDateStart)} - ${formatDateRangeInput(operationDateEnd)}`
+                    : "เลือกช่วงวันที่"
+                }
+                onClick={() => setOperationDatePickerOpen((open) => !open)}
+                className="cursor-pointer"
+              />
+              {operationDatePickerOpen ? (
+                <div className="absolute z-20 mt-2 grid w-full gap-3 rounded-md border border-border bg-white p-3 shadow-lg sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="operationDateStart">วันเริ่มต้น</Label>
+                    <Input id="operationDateStart" type="date" {...register("operationDateStart")} />
+                  </div>
+                  <div>
+                    <Label htmlFor="operationDateEnd">วันสิ้นสุด</Label>
+                    <Input
+                      id="operationDateEnd"
+                      type="date"
+                      min={operationDateStart}
+                      {...register("operationDateEnd")}
+                    />
+                  </div>
+                  <Button type="button" size="sm" className="sm:col-span-2" onClick={() => setOperationDatePickerOpen(false)}>
+                    ตกลง
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+            <FieldError message={errors.operationDateStart?.message || errors.operationDateEnd?.message} />
             <FieldError message={errors.operationDate?.message} />
           </div>
 

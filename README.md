@@ -76,7 +76,7 @@ settings
 
 ```text
 transactions:
-id, date, type, operationDate, description, categoryId, amount, paymentTypeId, received, note, createdAt, updatedAt, createdBy, updatedBy
+id, date, type, operationDateStart, operationDateEnd, description, categoryId, amount, paymentTypeId, received, note, createdAt, updatedAt, createdBy, updatedBy
 
 categories:
 id, name, type, active, sortOrder

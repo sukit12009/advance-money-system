@@ -7,7 +7,8 @@
 | id | string | Permanent ID, not a row number |
 | date | YYYY-MM-DD | Used for running balance order |
 | type | income \| expense | Determines add/subtract behavior |
-| operationDate | string | Human-friendly operation date |
+| operationDateStart | string | Operation start date (YYYY-MM-DD) |
+| operationDateEnd | string | Operation end date (YYYY-MM-DD) |
 | description | string | Transaction description |
 | categoryId | string | Must match category type |
 | amount | number | Always positive |

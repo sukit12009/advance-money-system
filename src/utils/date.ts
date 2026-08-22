@@ -14,6 +14,12 @@ export function formatDisplayDate(value: string) {
   return displayDateFormatter.format(parsed);
 }
 
+export function formatDateRangeInput(value: string) {
+  if (!value || !isIsoDate(value)) return value;
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
+}
+
 export function todayIsoDate() {
   const now = new Date();
   const bangkok = new Intl.DateTimeFormat("en-CA", {

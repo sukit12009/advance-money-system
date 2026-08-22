@@ -20,14 +20,24 @@ export const transactionSchema = z.object({
     required_error: "กรุณาเลือกประเภท",
     invalid_type_error: "ประเภทไม่ถูกต้อง",
   }),
-  operationDate: z.string().trim().min(1, "กรุณากรอกวันที่ดำเนินการ"),
+  operationDateStart: z.string().optional(),
+  operationDateEnd: z.string().optional(),
+  operationDate: z.string().optional(),
   description: z.string().trim().min(1, "กรุณากรอกรายการ"),
   categoryId: z.string().trim().min(1, "กรุณาเลือกหมวดหมู่"),
   amount: moneyValue,
   paymentTypeId: z.string().trim().min(1, "กรุณาเลือกประเภทเอกสาร"),
   received: z.boolean(),
   note: z.string().trim().max(500, "หมายเหตุยาวเกินไป").default(""),
-});
+}).refine(
+  (value) =>
+    !value.operationDateStart ||
+    !value.operationDateEnd ||
+    (isIsoDate(value.operationDateStart) &&
+      isIsoDate(value.operationDateEnd) &&
+      value.operationDateStart <= value.operationDateEnd),
+  { message: "วันที่สิ้นสุดต้องไม่น้อยกว่าวันที่เริ่มต้น", path: ["operationDateEnd"] },
+);
 
 export type TransactionFormValues = z.infer<typeof transactionSchema>;
 

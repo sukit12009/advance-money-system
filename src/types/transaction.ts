@@ -5,7 +5,9 @@ export type ReceivedFilter = "all" | "received" | "pending";
 export interface TransactionInput {
   date: string;
   type: TransactionType;
-  operationDate: string;
+  operationDateStart?: string;
+  operationDateEnd?: string;
+  operationDate?: string;
   description: string;
   categoryId: string;
   amount: number;

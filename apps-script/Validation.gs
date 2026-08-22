@@ -3,8 +3,11 @@ function validateTransactionInput(input) {
   if (!isIsoDate(input.date)) {
     throw appError("INVALID_DATE", "กรุณาระบุวันที่รูปแบบ YYYY-MM-DD");
   }
-  if (!sanitizeText(input.operationDate)) {
+  if (!isIsoDate(input.operationDateStart) || !isIsoDate(input.operationDateEnd)) {
     throw appError("MISSING_OPERATION_DATE", "กรุณากรอกวันที่ดำเนินการ");
+  }
+  if (String(input.operationDateStart) > String(input.operationDateEnd)) {
+    throw appError("INVALID_OPERATION_DATE_RANGE", "วันที่สิ้นสุดต้องไม่น้อยกว่าวันที่เริ่มต้น");
   }
   if (!sanitizeText(input.description)) {
     throw appError("MISSING_DESCRIPTION", "กรุณากรอกรายการ");
@@ -29,7 +32,8 @@ function validateTransactionInput(input) {
   return {
     date: String(input.date),
     type: type,
-    operationDate: sanitizeText(input.operationDate),
+    operationDateStart: String(input.operationDateStart),
+    operationDateEnd: String(input.operationDateEnd),
     description: sanitizeText(input.description),
     categoryId: sanitizeText(input.categoryId),
     amount: parseAmount(input.amount),

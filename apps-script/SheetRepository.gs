@@ -97,6 +97,19 @@ function ensureSheets() {
     if (!hasHeader) {
       sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
     }
+    if (
+      name === SHEET_NAMES.transactions &&
+      firstRow.some(function (cell) { return String(cell) === "operationDate"; })
+    ) {
+      const legacyRecords = SheetRepository.read(name).map(function (record) {
+        const operationDate = record.operationDate || "";
+        return Object.assign({}, record, {
+          operationDateStart: operationDate,
+          operationDateEnd: operationDate,
+        });
+      });
+      SheetRepository.write(name, legacyRecords);
+    }
   });
 }
 
@@ -164,7 +177,8 @@ function transactionSeed(id, date, type, operationDate, description, categoryId,
     id: id,
     date: date,
     type: type,
-    operationDate: operationDate,
+    operationDateStart: operationDate,
+    operationDateEnd: operationDate,
     description: description,
     categoryId: categoryId,
     amount: amount,
