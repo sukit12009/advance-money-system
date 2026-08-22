@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
-import { NavLink } from "react-router-dom";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Link, NavLink } from "react-router-dom";
 import {
   Banknote,
+  ChevronDown,
   FileSpreadsheet,
   FolderTree,
   LogOut,
@@ -26,6 +27,18 @@ const navigation = [
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const { data: currentUser, isLoading, error } = useCurrentUser();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    }
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, []);
   if (isLoading) return null;
   if (error || !currentUser) {
     return <LoginPage message={error instanceof Error ? error.message : undefined} />;
@@ -76,22 +89,43 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <main className="min-w-0 px-4 pb-5 pt-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-end gap-2 border-b border-border bg-white px-4 shadow-sm sm:gap-3 sm:px-6 lg:left-[260px] lg:px-8">
-            <div className="min-w-0 text-right">
-              <p className="text-sm font-medium text-slate-900">{currentUser.name}</p>
-              <p className="max-w-[180px] truncate text-xs text-muted-foreground sm:max-w-none">{currentUser.email}</p>
-              <p className="text-xs text-teal-700">สิทธิ์: {currentUser.role}</p>
+            <div ref={profileRef} className="relative">
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-right hover:bg-slate-50"
+                onClick={() => setProfileOpen((open) => !open)}
+                aria-expanded={profileOpen}
+              >
+                <span className="min-w-0">
+                  <span className="block text-sm font-medium text-slate-900">{currentUser.name}</span>
+                  <span className="block max-w-[180px] truncate text-xs text-muted-foreground sm:max-w-none">{currentUser.email}</span>
+                  <span className="block text-xs text-teal-700">สิทธิ์: {currentUser.role}</span>
+                </span>
+                <ChevronDown className="h-4 w-4 shrink-0 text-slate-500" />
+              </button>
+              {profileOpen ? (
+                <div className="absolute right-0 mt-2 w-48 rounded-md border border-border bg-white p-1 shadow-lg">
+                  <Link
+                    to="/change-password"
+                    className="block rounded px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    onClick={() => setProfileOpen(false)}
+                  >
+                    เปลี่ยนรหัสผ่าน
+                  </Link>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
+                    onClick={() => {
+                      window.localStorage.removeItem("fern-auth-token");
+                      window.location.reload();
+                    }}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
+              ) : null}
             </div>
-            <button
-              type="button"
-              className="inline-flex h-9 items-center gap-2 rounded-md border border-border bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              onClick={() => {
-                window.localStorage.removeItem("fern-auth-token");
-                window.location.reload();
-              }}
-            >
-              <LogOut className="h-4 w-4" />
-              Logout
-            </button>
           </header>
           {children}
         </div>

@@ -25,6 +25,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() ?? "";
 
 type RequestPayload =
   | { action: "login"; data: { email: string; password: string } }
+  | { action: "changePassword"; data: { currentPassword: string; newPassword: string; confirmPassword: string } }
   | { action: "registerUser"; data: UserInput }
   | { action: "createTransaction"; data: TransactionInput }
   | { action: "updateTransaction"; id: string; data: Partial<TransactionInput> }
@@ -123,6 +124,13 @@ export const api = {
 
   login(email: string, password: string) {
     return post<{ token: string; user: AppUser }>({ action: "login", data: { email, password } });
+  },
+
+  changePassword(currentPassword: string, newPassword: string, confirmPassword: string) {
+    return post<null>({
+      action: "changePassword",
+      data: { currentPassword, newPassword, confirmPassword },
+    });
   },
 
   registerUser(data: UserInput) {
@@ -327,6 +335,13 @@ async function mockPost<T>(payload: RequestPayload) {
     };
     writeStorage(storageKeys.users, [...users, created]);
     return created as T;
+  }
+
+  if (payload.action === "changePassword") {
+    if (payload.data.newPassword.length < 8 || payload.data.newPassword !== payload.data.confirmPassword) {
+      throw new ApiError("รหัสผ่านใหม่ไม่ถูกต้องหรือไม่ตรงกัน", "INVALID_PASSWORD");
+    }
+    return null as T;
   }
 
   if (payload.action === "createTransaction") {

@@ -7,6 +7,7 @@ import { SettingsPage } from "@/pages/SettingsPage";
 import { TransactionsPage } from "@/pages/TransactionsPage";
 import { UsersPage } from "@/pages/UsersPage";
 import { CreateUserPage } from "@/pages/CreateUserPage";
+import { ChangePasswordPage } from "@/pages/ChangePasswordPage";
 
 export const router = createBrowserRouter([
   { path: "/users/create", element: <CreateUserPage /> },
@@ -21,6 +22,7 @@ export const router = createBrowserRouter([
       { path: "payment-types", element: <PaymentTypesPage /> },
       { path: "users", element: <UsersPage /> },
       { path: "settings", element: <SettingsPage /> },
+      { path: "change-password", element: <ChangePasswordPage /> },
     ],
   },
 ]);

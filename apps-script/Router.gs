@@ -60,6 +60,22 @@ function routePost(e) {
     return jsonSuccess({ token: token, user: users[index] }, "เข้าสู่ระบบสำเร็จ");
   }
 
+  if (action === "changePassword") {
+    const user = getCurrentUser();
+    const data = body.data || {};
+    if (String(data.newPassword || "").length < 8 || data.newPassword !== data.confirmPassword) {
+      throw appError("INVALID_PASSWORD", "รหัสผ่านใหม่ไม่ถูกต้องหรือไม่ตรงกัน");
+    }
+    const records = SheetRepository.read(SHEET_NAMES.users);
+    const record = records.find(function (item) { return String(item.email).toLowerCase() === user.email; });
+    if (!record || record.passwordHash !== hashPassword(data.currentPassword || "")) {
+      throw appError("INVALID_PASSWORD", "รหัสผ่านเดิมไม่ถูกต้อง");
+    }
+    record.passwordHash = hashPassword(data.newPassword);
+    SheetRepository.updateById(SHEET_NAMES.users, record.id, record);
+    return jsonSuccess(null, "เปลี่ยนรหัสผ่านสำเร็จ");
+  }
+
   if (action === "createTransaction") {
     return jsonSuccess(TransactionService.create(body.data || {}), "บันทึกรายการสำเร็จ");
   }
