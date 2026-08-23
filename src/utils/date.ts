@@ -15,9 +15,11 @@ export function formatDisplayDate(value: string) {
 }
 
 export function formatDateRangeInput(value: string) {
-  if (!value || !isIsoDate(value)) return value;
-  const [year, month, day] = value.split("-");
-  return `${day}/${month}/${year}`;
+  if (!value) return value;
+  if (isIsoDate(value)) return formatDisplayDate(value);
+  const legacy = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value);
+  if (!legacy) return value;
+  return `${legacy[1]}/${legacy[2]}/${Number(legacy[3]) + 543}`;
 }
 
 export function todayIsoDate() {

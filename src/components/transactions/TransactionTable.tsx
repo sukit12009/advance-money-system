@@ -7,7 +7,7 @@ import type { TransactionRecord } from "@/types/transaction";
 import { TRANSACTION_TYPE_LABEL } from "@/types/transaction";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/currency";
-import { formatDisplayDate } from "@/utils/date";
+import { formatDateRangeInput, formatDisplayDate } from "@/utils/date";
 
 type SortKey = "date" | "amount" | "balance";
 type SortDirection = "asc" | "desc";
@@ -102,9 +102,9 @@ export function TransactionTable({
                       </Badge>
                     </td>
                     <td className="px-3 py-3">
-                      {transaction.operationDateStart ?? transaction.operationDate ?? "-"}
+                      {formatDateRangeInput(transaction.operationDateStart ?? transaction.operationDate ?? "") || "-"}
                       {transaction.operationDateEnd && transaction.operationDateEnd !== transaction.operationDateStart
-                        ? ` - ${transaction.operationDateEnd}`
+                        ? ` - ${formatDateRangeInput(transaction.operationDateEnd)}`
                         : ""}
                     </td>
                     <td className="px-3 py-3">
