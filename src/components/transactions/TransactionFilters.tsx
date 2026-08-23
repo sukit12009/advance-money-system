@@ -1,4 +1,12 @@
 import { Search, RotateCcw } from "lucide-react";
+import DatePicker from "react-datepicker";
+import { ThaiDateInput } from "@/components/common/ThaiDateInput";
+import { ThaiDateHeader } from "@/components/common/ThaiDateHeader";
+import { registerLocale } from "react-datepicker";
+import { th } from "date-fns/locale/th";
+import "react-datepicker/dist/react-datepicker.css";
+
+registerLocale("th", th);
 import { Button } from "@/components/ui/Button";
 import { Input, Label, Select } from "@/components/ui/FormControls";
 import type { Category } from "@/types/category";
@@ -109,21 +117,32 @@ export function TransactionFilters({
 
         <div>
           <Label htmlFor="dateFrom">วันที่เริ่มต้น</Label>
-          <Input
-            id="dateFrom"
-            type="date"
-            value={filters.dateFrom ?? ""}
-            onChange={(event) => setFilter("dateFrom", event.target.value)}
+          <DatePicker
+            selected={isoToDate(filters.dateFrom)}
+            onChange={(date) => setFilter("dateFrom", dateToIso(date))}
+            dateFormat="dd/MM/yyyy"
+            locale="th"
+            customInput={<ThaiDateInput />}
+            renderCustomHeader={(props) => <ThaiDateHeader {...props} />}
+            placeholderText="dd/mm/yyyy"
+            className="h-10 w-full rounded-md border border-border bg-white px-3 text-sm text-slate-900 shadow-sm"
+            wrapperClassName="w-full"
           />
         </div>
 
         <div>
           <Label htmlFor="dateTo">วันที่สิ้นสุด</Label>
-          <Input
-            id="dateTo"
-            type="date"
-            value={filters.dateTo ?? ""}
-            onChange={(event) => setFilter("dateTo", event.target.value)}
+          <DatePicker
+            selected={isoToDate(filters.dateTo)}
+            onChange={(date) => setFilter("dateTo", dateToIso(date))}
+            minDate={isoToDate(filters.dateFrom) ?? undefined}
+            dateFormat="dd/MM/yyyy"
+            locale="th"
+            customInput={<ThaiDateInput />}
+            renderCustomHeader={(props) => <ThaiDateHeader {...props} />}
+            placeholderText="dd/mm/yyyy"
+            className="h-10 w-full rounded-md border border-border bg-white px-3 text-sm text-slate-900 shadow-sm"
+            wrapperClassName="w-full"
           />
         </div>
 
@@ -141,4 +160,16 @@ export function TransactionFilters({
       </div>
     </section>
   );
+}
+
+function isoToDate(value?: string) {
+  if (!value) return null;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function dateToIso(value: Date | null) {
+  if (!value) return "";
+  return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, "0")}-${String(value.getDate()).padStart(2, "0")}`;
 }

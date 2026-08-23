@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save } from "lucide-react";
+import DatePicker from "react-datepicker";
+import { ThaiDateInput } from "@/components/common/ThaiDateInput";
+import { ThaiDateHeader } from "@/components/common/ThaiDateHeader";
+import { registerLocale } from "react-datepicker";
+import { th } from "date-fns/locale/th";
+import "react-datepicker/dist/react-datepicker.css";
+
+registerLocale("th", th);
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/Button";
 import { FieldError, Input, Label, Select, Textarea } from "@/components/ui/FormControls";
@@ -143,15 +151,31 @@ export function TransactionFormDialog({
                 <div className="absolute z-20 mt-2 grid w-full gap-3 rounded-md border border-border bg-white p-3 shadow-lg sm:grid-cols-2">
                   <div>
                     <Label htmlFor="operationDateStart">วันเริ่มต้น</Label>
-                    <Input id="operationDateStart" type="date" {...register("operationDateStart")} />
+                    <DatePicker
+                      selected={isoToDate(operationDateStart)}
+                      onChange={(date) => setValue("operationDateStart", dateToIso(date), { shouldValidate: true })}
+                      dateFormat="dd/MM/yyyy"
+                      locale="th"
+                      customInput={<ThaiDateInput />}
+                      renderCustomHeader={(props) => <ThaiDateHeader {...props} />}
+                      placeholderText="dd/mm/yyyy"
+                      className="h-10 w-full rounded-md border border-border bg-white px-3 text-sm text-slate-900 shadow-sm"
+                      wrapperClassName="w-full"
+                    />
                   </div>
                   <div>
                     <Label htmlFor="operationDateEnd">วันสิ้นสุด</Label>
-                    <Input
-                      id="operationDateEnd"
-                      type="date"
-                      min={operationDateStart}
-                      {...register("operationDateEnd")}
+                    <DatePicker
+                      selected={isoToDate(operationDateEnd)}
+                      onChange={(date) => setValue("operationDateEnd", dateToIso(date), { shouldValidate: true })}
+                      minDate={isoToDate(operationDateStart) ?? undefined}
+                      dateFormat="dd/MM/yyyy"
+                      locale="th"
+                      customInput={<ThaiDateInput />}
+                      renderCustomHeader={(props) => <ThaiDateHeader {...props} />}
+                      placeholderText="dd/mm/yyyy"
+                      className="h-10 w-full rounded-md border border-border bg-white px-3 text-sm text-slate-900 shadow-sm"
+                      wrapperClassName="w-full"
                     />
                   </div>
                   <Button type="button" size="sm" className="sm:col-span-2" onClick={() => setOperationDatePickerOpen(false)}>
@@ -245,4 +269,19 @@ export function TransactionFormDialog({
       </form>
     </Modal>
   );
+}
+
+function isoToDate(value?: string) {
+  if (!value) return null;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function dateToIso(value: Date | null) {
+  if (!value) return "";
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
