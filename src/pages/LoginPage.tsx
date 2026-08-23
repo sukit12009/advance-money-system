@@ -32,7 +32,7 @@ export function LoginPage({ message }: { message?: string }) {
         </div>
         <h1 className="text-xl font-semibold text-slate-950">เข้าสู่ระบบ</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          กรุณาเข้าสู่ระบบด้วย Google Account ที่ได้รับอนุญาต
+          กรุณาเข้าสู่ระบบด้วย Account ที่ได้รับอนุญาต
         </p>
         <form className="mt-6 grid gap-3 text-left" onSubmit={submit}>
           <div><Label htmlFor="loginEmail">อีเมล</Label><Input id="loginEmail" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></div>
