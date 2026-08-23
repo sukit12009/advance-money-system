@@ -145,3 +145,6 @@ npm run build
 5. Output directory: `dist`
 
 `vercel.json` ตั้ง rewrite ไว้แล้วเพื่อให้ React Router ทำงานเมื่อ refresh path ย่อย
+## Documentation
+
+ดูเอกสารทั้งหมดได้ที่ [docs/README.md](docs/README.md) รวมถึง schema, project specification และรายละเอียดระบบ advance money
